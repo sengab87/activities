@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+
 // activities define layout which has layout container and views ///
 // Recycle view layoutManager // Adapter connects data to individual views
 // viewHolder bind data
@@ -23,8 +24,10 @@ class MainActivity : AppCompatActivity() {
 
     /// Observer to know when it updated
     private val forecastRespository = ForecastRepository()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         val zipCodeEditText: EditText = findViewById(R.id.zipcodeEditText)
         val enterButton: Button = findViewById(R.id.enterButton)
@@ -38,14 +41,22 @@ class MainActivity : AppCompatActivity() {
                 forecastRespository.loadForecast(zipCode)
             }
         }
+
         val forecastList: RecyclerView = findViewById(R.id.forecastList)
-        forecastList.layoutManager = LinearLayoutManager(this, )
+        forecastList.layoutManager = LinearLayoutManager(this)
+        val dailyForeCastAdapter = DailyForeCastAdapter(){
+            /// clicked click handler
+            val msg = getString(R.string.forecast_clicked_format,it.temp, it.description)
+            Toast.makeText(this,msg,Toast.LENGTH_SHORT).show()
+        }
+        forecastList.adapter = dailyForeCastAdapter
         val weeklyForecastObserver = Observer<List<DailyForecast>> { forecastItems ->
 
             /// UPDATE OUT LIST ADAPTER
-            Toast.makeText(this,"JOR", Toast.LENGTH_SHORT).show()
+            dailyForeCastAdapter.submitList(forecastItems)
 
         }
+
         forecastRespository.weeklyForecast.observe(this, weeklyForecastObserver)
 
 
